@@ -1,13 +1,17 @@
 {
-  "name": "broccoli-coffee",
-  "description": "CoffeeScript filter for Broccoli",
-  "version": "0.6.0",
+  "name": "@blakeelearning/broccoli-coffee",
+  "description": "CoffeeScript filter for Broccoli (CoffeeScript 1.6.3)",
+  "version": "1.0.0",
   "author": "Jo Liss <joliss42@gmail.com>",
+  "contributors": [
+    "Jo Liss <joliss42@gmail.com>",
+    "Blake eLearning"
+  ],
   "main": "index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joliss/broccoli-coffee"
+    "url": "https://github.com/blake-education/broccoli-coffee"
   },
   "keywords": [
     "broccoli-plugin",
@@ -19,7 +23,7 @@
   },
   "dependencies": {
     "broccoli-persistent-filter": "^1.1.5",
-    "coffee-script": "~1.10.0",
+    "coffee-script": "1.6.3",
      "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
