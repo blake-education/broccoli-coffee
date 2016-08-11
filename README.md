@@ -22,18 +22,16 @@ will be replaced with compiled `.js` files in `outputNode`.
 
 ### Options
 
-#### coffeeOptions
+#### bare
 
-Options to pass to coffeeScript. E.g, 
+If `bare` is true, the CoffeeScript compiler will not emit a top-level
+function wrapper:
 
 ```js
 new BroccoliCoffee(node, {
-  coffeeOptions: { bare: true },
+  bare: true
 })
 ```
-
-If `bare` is true, the CoffeeScript compiler will not emit a top-level
-function wrapper.
 
 ## Source Maps
 

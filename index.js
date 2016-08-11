@@ -15,7 +15,7 @@ function CoffeeScriptFilter (inputTree, options) {
   if (!(this instanceof CoffeeScriptFilter)) return new CoffeeScriptFilter(inputTree, options)
   Filter.call(this, inputTree, options)
   options = options || {}
-  this.coffeeOptions = options.coffeeOptions || {};
+  this.bare = options.bare;
   this.options = options;
 }
 
@@ -38,9 +38,10 @@ CoffeeScriptFilter.prototype.cacheKeyProcessString = function(string, relativePa
 };
 
 CoffeeScriptFilter.prototype.processString = function (string, srcFile) {
-  var coffeeScriptOptions = Object.assign({
+  var coffeeScriptOptions = {
+    bare: this.bare,
     literate: coffeeScript.helpers.isLiterate(srcFile)
-  }, this.coffeeOptions)
+  }
 
   try {
     return coffeeScript.compile(string, coffeeScriptOptions)
