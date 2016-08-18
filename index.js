@@ -1,6 +1,8 @@
 var Filter = require('broccoli-persistent-filter')
 var coffeeScript = require('coffee-script')
 var stringify = require('json-stable-stringify')
+var convert = require('convert-source-map')
+var path = require('path')
 
 module.exports = CoffeeScriptFilter
 CoffeeScriptFilter.prototype = Object.create(Filter.prototype)
@@ -16,6 +18,7 @@ function CoffeeScriptFilter (inputTree, options) {
   Filter.call(this, inputTree, options)
   options = options || {}
   this.bare = options.bare;
+  this.sourceMap = options.sourceMap;
   this.options = options;
 }
 
@@ -37,14 +40,19 @@ CoffeeScriptFilter.prototype.cacheKeyProcessString = function(string, relativePa
   return this.optionsHash() + Filter.prototype.cacheKeyProcessString.call(this, string, relativePath);
 };
 
-CoffeeScriptFilter.prototype.processString = function (string, srcFile) {
-  var coffeeScriptOptions = {
-    bare: this.bare,
-    literate: coffeeScript.helpers.isLiterate(srcFile)
-  }
+CoffeeScriptFilter.prototype.processString = function(string, srcFile) {
+  var coffeeScriptOptions = this.buildCoffeeOptions(srcFile)
 
   try {
-    return coffeeScript.compile(string, coffeeScriptOptions)
+    var output = coffeeScript.compile(string, coffeeScriptOptions);
+
+    if (!this.sourceMap) {
+      return output
+    } else {
+      const map = JSON.parse(output.v3SourceMap)
+      map.sourcesContent = [ string ]
+      return this.appendSourcemaps(output.js, map)
+    }
   } catch (err) {
     // CoffeeScript reports line and column as zero-indexed
     // first_line/first_column properties; pass them on
@@ -52,4 +60,24 @@ CoffeeScriptFilter.prototype.processString = function (string, srcFile) {
     err.column = err.location && ((err.location.first_column || 0) + 1)
     throw err
   }
+}
+
+CoffeeScriptFilter.prototype.buildCoffeeOptions = function(filepath) {
+  var base = this.inputPaths[0]
+
+  return {
+    bare: this.bare,
+    filename: filepath,
+    literate: coffeeScript.helpers.isLiterate(filepath),
+    header: '',
+    generatedFile: 'index.js',
+    sourceMap: !!this.sourceMap,
+    sourceRoot: '..',
+    sourceFiles: [ filepath ]
+  }
+}
+
+CoffeeScriptFilter.prototype.appendSourcemaps = function(source, map) {
+  var comment = convert.fromObject(map).toComment()
+  return source + '\n' + comment + '\n'
 }
