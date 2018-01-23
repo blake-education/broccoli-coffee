@@ -24,7 +24,8 @@
   "dependencies": {
     "broccoli-persistent-filter": "^1.1.5",
     "coffee-script": "1.6.3",
-     "json-stable-stringify": "^1.0.0"
+    "coffeescript": "2.1.1",
+    "json-stable-stringify": "^1.0.0"
   },
   "devDependencies": {
     "broccoli-fixture": "^0.1.0",

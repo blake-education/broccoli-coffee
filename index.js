@@ -1,5 +1,8 @@
+
+var path = require('path')
 var Filter = require('broccoli-persistent-filter')
-var coffeeScript = require('coffee-script')
+var cs1 = require('coffee-script')
+var cs2 = require('coffeescript')
 var stringify = require('json-stable-stringify')
 
 module.exports = CoffeeScriptFilter
@@ -19,7 +22,7 @@ function CoffeeScriptFilter (inputTree, options) {
   this.options = options;
 }
 
-CoffeeScriptFilter.prototype.extensions = ['coffee', 'litcoffee', 'coffee.md']
+CoffeeScriptFilter.prototype.extensions = ['coffee', 'coffee2', 'litcoffee', 'coffee.md']
 CoffeeScriptFilter.prototype.targetExtension = 'js'
 CoffeeScriptFilter.prototype.baseDir = function() {
   return __dirname;
@@ -38,18 +41,25 @@ CoffeeScriptFilter.prototype.cacheKeyProcessString = function(string, relativePa
 };
 
 CoffeeScriptFilter.prototype.processString = function (string, srcFile) {
-  var coffeeScriptOptions = {
+  var ext = path.extname(srcFile)
+  var cs = cs1
+  if (ext === '.coffee2') {
+    cs = cs2
+  }
+
+  var opts = {
     bare: this.bare,
-    literate: coffeeScript.helpers.isLiterate(srcFile)
+    literate: cs.helpers.isLiterate(srcFile)
   }
 
   try {
-    return coffeeScript.compile(string, coffeeScriptOptions)
+    return cs.compile(string, opts)
   } catch (err) {
     // CoffeeScript reports line and column as zero-indexed
     // first_line/first_column properties; pass them on
     err.line = err.location && ((err.location.first_line || 0) + 1)
     err.column = err.location && ((err.location.first_column || 0) + 1)
+    err.filename = srcFile
     throw err
   }
 }
